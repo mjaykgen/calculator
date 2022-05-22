@@ -1,0 +1,290 @@
+import java.util.Scanner;
+
+import java.util.Date;
+class Employee{
+    //initializing the variables
+    private int id;
+    protected String name;
+    private int yearOfBirth;
+
+    //constructor
+    public Employee(int id,String name,int yearOfBirth){
+        //to make sure id is not negative
+        setID(id);
+        this.name=name;
+        //calling the setter to take care of all exceptions
+        setYearOfBirth(yearOfBirth);
+    }
+
+    //setters
+    public void setID(int id){
+        //setting id to the opposite incase a negative value is entered
+        this.id = ( id < 0 ) ? -id : id;  
+    }
+    public void setYearOfBirth(int yearOfBirth){
+        Date d=new Date();
+        //checking if person is older than 18
+        if(yearOfBirth-1900>(d.getYear()-18)){
+            this.yearOfBirth=0;
+            System.out.println("Employee entered is underage");
+        }
+        else
+            this.yearOfBirth=yearOfBirth;
+    }
+    
+    public void setName(String name){
+        this.name=name;
+    }
+
+    //getters
+    public String getName(){return name;}
+    public int getYearOfBirth(){return yearOfBirth;}
+    public int getID(){return id;}
+    
+    
+    public boolean equals (Object o) {
+        //comparing if id is the same then they are equal
+        if(o != null && o instanceof Employee other)
+            return (this.id == other.id);
+        return false;
+    }
+    //to string of parent class
+    public String toString(){
+        return id 
+               + "-"  
+               + name 
+               + "-year of birth:" 
+               + yearOfBirth;
+    }
+
+    
+}
+
+
+class FullTime extends Employee {
+    //the personal attributes for a fulltime person
+    private double salary;
+    private int yearsOfExperience;
+
+    //constructor
+    public FullTime(int id,String name,int yearOfBirth,double salary,int yearsOfExperience){
+        //calling the constructor of the parent class
+        super(id,name,yearOfBirth);
+        setSalary(salary);
+        setYearsOfExperience(yearsOfExperience);
+    }
+
+    //setters to make sure u have no negative values
+    public void setSalary(double salary){
+        //a default 0 salary for negative salaries
+        this.salary = (salary<0)?-salary:salary;
+    }
+    public void setYearsOfExperience(int yearsOfExperience){
+        //making sure no neg years
+        this.yearsOfExperience=(yearsOfExperience<0)?-yearsOfExperience:yearsOfExperience;
+    }
+    //getters
+    public int getYearsOfExperience(){return yearsOfExperience;}
+    public double getSalary(){return salary;}
+
+    //to string of fulltime child class
+    public String toString(){
+        return super.toString() 
+               + "\nSalary: " 
+               + salary
+               + "\nYears of experience: "
+               + yearsOfExperience;
+    }
+
+    
+}
+
+class PartTime extends Employee{
+    private int nbHours;
+    private double ratePerHour;
+
+    //constructor
+    public PartTime(int id,String name,int yearOfBirth,int nbHours,double ratePerHour){
+        //calling the constructor of the parent class first
+        super(id,name,yearOfBirth);
+        setnbHours(nbHours);
+        setratePerHour(ratePerHour);
+
+    }
+    //setters
+    public void setnbHours(int nbHours){
+        //nb hours is the opposite if nb set is negative
+        this.nbHours = nbHours < 0 ? -nbHours : nbHours;
+    }
+    public void setratePerHour(double ratePerHour){
+        //setting rate per hour to opposite in case its negative
+        this.ratePerHour = ratePerHour < 0 ? -ratePerHour : ratePerHour;
+    }
+    //getters
+    public int getnbHours(){return nbHours;}
+    public double getratePerHour(){return ratePerHour;}
+
+    public double getSalary(){return nbHours*ratePerHour;}
+    
+    //to string of the partTime class
+    public String toString(){
+        return super.toString() 
+                + "\nNumber of hours worked:"
+                + nbHours
+                + "\nRate per hour:"
+                + ratePerHour
+                + "\nSalary:"
+                + getSalary(); 
+    }
+
+
+
+}
+
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        //initiating the array that willl contain the employees
+        int size=50;
+        Employee []employees=new Employee[size];
+        //initiating a scanner
+        Scanner in = new Scanner(System.in);
+        //initiating the number of employees to ask the user how much it wants to input
+        int numofemployees;
+        
+        //choice used first for whether full time or part time then for the choice in the menu
+        int choice;
+        do{
+            //asking the user to enter the number of employees
+            System.out.println("Enter the number of employees:(Max "+ size + ")");
+            numofemployees=in.nextInt();    
+        }while(numofemployees<0||numofemployees>size);
+
+
+        for(int i = 0 ; i < numofemployees; i++){
+            //filling all the employees
+            do{
+                //checking to see if is a full timer or part timer
+                System.out.println("Enter:\n\t1-FullTime\n\t2-PartTime");
+                choice=in.nextInt();
+            }while(choice != 1 && choice != 2);
+            
+            //filling while making sur eof the condition where the employee is underage
+            do{
+                System.out.println("Enter the employees(id/name/yearOfBirth):");                           
+                switch(choice){
+                    case 1:
+                    System.out.println("\tIf full time(salary/yearsofexperience)");
+                    //getting a full timer
+                    employees[i]=new FullTime(in.nextInt(),in.next(),in.nextInt(), in.nextDouble(), in.nextInt());
+                    break;
+                    case 2:
+                    //get a part timer
+                    System.out.println("\tIf part time(nbrHours/ratePerHour)");
+                    employees[i]=new PartTime(in.nextInt(),in.next(),in.nextInt(), in.nextInt(), in.nextDouble());
+                    break;
+            }
+            }while(employees[i].getYearOfBirth()==0);
+        }
+        do{
+            System.out.println("Choose what you want to do:"
+                               +"\n1-Apply Raise(for fulltimers with more than 5 years of experience)"
+                               +"\n2-Apply overtime pay"
+                               +"\n3-Display all details about employees"
+                               +"\n4-Find oldest employee"
+                               +"\n5-Exit");
+                               //switch case for the menu
+            choice=in.nextInt();
+            switch(choice){
+                case 1:
+                applyRaise(employees,numofemployees);
+                break;
+                case 2:
+                overtimePay(employees,numofemployees);
+                break;
+                case 3:
+                display(employees,numofemployees);
+                break;
+                case 4:
+                oldestEmployee(employees,numofemployees);
+                break;
+                case 5:
+                System.out.println("GoodBye");
+                break;
+            }                   
+            //till u choose to exit
+        }while(choice!=5);
+        
+        
+    }
+    public static void applyRaise(Employee []list,int numofemployees){
+        //going throught the array
+        for(int i=0;i<numofemployees;i++)
+        //checking if it's a full timer
+            if(list[i] instanceof FullTime){
+                //creating a full timer to  lessen redundency
+                FullTime ftimer=(FullTime)list[i];
+                if(ftimer.getYearsOfExperience()>=5)
+                //apply the raise if he has more than 5 years of experience
+                    ftimer.setSalary(ftimer.getSalary()*1.1);
+            }
+
+    }
+    public static void overtimePay(Employee []list,int numofemployees){
+        //initiating variable to lesten redundency
+        int nbofhours;
+        double rateperhour;
+        double overtimepay;
+        boolean noPartTimers=true;
+        for(int i=0;i<numofemployees;i++){
+            //check if parttimer
+            if(list[i] instanceof PartTime){
+                PartTime ptimer=(PartTime)list[i];
+                nbofhours=ptimer.getnbHours();
+                //checking if they worked more than 40 hours
+                if(nbofhours>40){
+                    //bool to make sure there is a part timer that has more than 40hrs
+                    noPartTimers=false;
+                    rateperhour=ptimer.getratePerHour();//the rate
+                    overtimepay=(nbofhours-40)*(rateperhour*1.5);//his salary then outputting the overtime and total salary
+                    System.out.println("The overtime pay for "+ptimer.getName() + " is: "
+                                        + overtimepay
+                                        + "\nThe total Salary will be:"
+                                        + (overtimepay + 40 * rateperhour));
+                }
+            }
+        }
+        if(noPartTimers)
+            System.out.println("There was no part-timers with 40+ hours");
+
+
+
+    }
+
+    public static void display(Employee []list,int numofemployees){
+        //displaying all details
+        for(int i=0;i<numofemployees;i++)
+            System.out.println(list[i]);
+    }
+
+    public static void oldestEmployee(Employee []list,int numofemployees){
+        //initiating a min year to the first employee's year
+        int minyear=list[0].getYearOfBirth();
+        int yofbirth;
+        for(int i=1;i<numofemployees;i++){
+            yofbirth=list[i].getYearOfBirth();
+            if(yofbirth<minyear)
+                minyear=yofbirth;
+        }
+        //outputting all employees born in this year
+        System.out.println();
+        for(int i=0;i<numofemployees;i++){
+            if(list[i].getYearOfBirth()==minyear)
+                System.out.println(list[i].getID()+" "+list[i].getName());
+        }
+    }
+
+
+
+
+}
